@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Europe/Madrid');
 // Datos de conexión a la base de datos
 $host = getenv('MYSQL_HOST');
 $dbname = getenv('MYSQL_DATABASE');
@@ -39,6 +40,20 @@ try {
         $stmt = $pdo->prepare("DELETE FROM acciones");
         $stmt->execute();
         echo "<p>¡Todos los registros han sido borrados!</p>";
+    }
+
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    //Recibenumero
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['numero'])) {
+        $numero = intval($_POST['numero']);
+        $stmt = $pdo->prepare("INSERT INTO acciones (numero) VALUES (:numero)");
+        $stmt->bindParam(':numero', $numero);
+        $stmt->execute();
+        echo json_encode(["status" => "success", "message" => "¡Número guardado correctamente!"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "No se recibió ningún número."]);
     }
 } catch (PDOException $e) {
     echo "<p>Error en la conexión: " . $e->getMessage() . "</p>";
