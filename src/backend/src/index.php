@@ -35,26 +35,21 @@ try {
         }
     }
 
-    // Si se ha enviado el formulario para borrar todos los datos
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrar'])) {
-        $stmt = $pdo->prepare("DELETE FROM acciones");
-        $stmt->execute();
-        echo "<p>¡Todos los registros han sido borrados!</p>";
-    }
+    // Obtener el último número ingresado
+    $stmt = $pdo->prepare("SELECT numero FROM acciones ORDER BY id DESC LIMIT 1");
+    $stmt->execute();
+    $ultimo_numero = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Debugging: Verifica qué devuelve la consulta
+    var_dump($ultimo_numero); // Muestra el último número obtenido
 
-    //Recibenumero
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['numero'])) {
-        $numero = intval($_POST['numero']);
-        $stmt = $pdo->prepare("INSERT INTO acciones (numero) VALUES (:numero)");
-        $stmt->bindParam(':numero', $numero);
-        $stmt->execute();
-        echo json_encode(["status" => "success", "message" => "¡Número guardado correctamente!"]);
+    // Mostrar el último número en la página
+    if ($ultimo_numero) {
+        echo "<p>Último número guardado en la base de datos: " . htmlspecialchars($ultimo_numero['numero']) . "</p>";
     } else {
-        echo json_encode(["status" => "error", "message" => "No se recibió ningún número."]);
+        echo "<p>No hay números guardados en la base de datos.</p>";
     }
+
 } catch (PDOException $e) {
     echo "<p>Error en la conexión: " . $e->getMessage() . "</p>";
 }
@@ -74,7 +69,3 @@ try {
     <button type="submit">Buscar número</button>
 </form>
 
-<!-- Botón para borrar todos los registros -->
-<form method="POST" action="">
-    <button type="submit" name="borrar">Borrar todos los datos</button>
-</form>
