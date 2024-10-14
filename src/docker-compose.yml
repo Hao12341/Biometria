@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   php:
-    build: ./backend  # Construye el backend desde la carpeta 'backend'
+    image: haoxux/biometria-php:v0 # Reemplaza con el nombre de tu imagen de PHP que ya tienes
     container_name: php-backend
     volumes:
       - ./backend/src:/var/www/html  # Mapea los archivos PHP al contenedor
@@ -17,7 +17,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
   db:
-    image: mysql:8.0  # Usa la imagen oficial de MySQL versión 8.0
+    image: haoxux/biometria-mysql:v0  # Usa la imagen oficial de MySQL versión 8.0
     container_name: mysql-db
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -29,7 +29,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql  # Persiste los datos en un volumen
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql  # Usa la ruta relativa
-
 
 volumes:
   db_data:
